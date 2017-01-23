@@ -46,7 +46,7 @@ Every time you start a container, it is a new instance. Any files you ay have cr
 `ps -a` = lists all containers, even if they're not running
 `--rm` removes container whn it exits
 
-### Containers in Depth
+### Containers in Dept
 Containers are given a random name at runtime. To specify your own name, use `--name`
 `docker run --name hello_world busybox:1.24`
 
@@ -55,7 +55,6 @@ Containers are given a random name at runtime. To specify your own name, use `--
 ### Docker Port Mapping & Docker Logs
 -p <host_port>:<container_port>
 `docker run -p tomcat 8888:8080`
-
 In the above example, tomcat's default port within the container app is 8080. To view the server's responses from within the container, you would visit `localhost:8080`.
 
 After mapping to the host's port 8888, you would point the browser of the host machine to `localhost:8888`.
@@ -91,7 +90,7 @@ Multiple containers can share access to the same underlying image.
 `docker run -it debian:jessie`
 * do stuff to it (add files)
 `apt-get update && apt-get install -y vim`
-* commit changes (get id from `ps`)` 
+* commit changes (get id from `ps`)
 `docker commit <container_id> mepler/debian:1.0.1`
 
 **Option 2: write a Dockerfile**
@@ -132,6 +131,130 @@ RUN apt-get install -y vim
 If I added `git` to the end of the second line and rebuilt the image, the first line would be skipped since it was not changed and is in the build cache. That means I risk not pulling the most up-to-date references for git when it's installed. 
 
 In general, caching is not dangerous. But when you need to make sure you're not relying on it, use the `--no-cache` flag.
+
+COPY command copies new files or directories from build context and adds them to the file system of the container.
+`COPY abc.txt /src/abc.txt`
+
+ADD command is same as copy but also allows you to download files and copy them to the container. It can also automatically uncompress files.
+
+__use COPY for transparency, unless you absolutely need ADD__
+
+See Sec. 3, Lecture 16 for USER command and why it's __vital for security__.
+
+
+### Pushing Images to Docker Hub ###
+1. rename an existing image using the tag command 
+! dont' use 'latest' tag, as it is the default and not always indicative of actual status
+`docker tag <containerid> meplernew/debian:1.0.1`
+<containerid> can be obtained by using `ps -a`
+
+2. Login
+`docker login --username=<username>`
+
+3. Push
+`docker push meplernew/debian:1.0.1`
+
+### Create Dockerized Web Apps
+To get IP address of the docker virtual machine on Mac/Windows:
+`docker-machine ls`
+Copy IP addres and pase in browser. On Linux it's just 'localhost.'
+
+### Run a Command on a Running Instance
+`docker exec <flags><containerId> <cmd>`
+example:
+`docker exec -it 89d8w9s bash` opens shell on container w/ TTY
+
+### Linking
+Docker Compose is a tool (installed separately) for defining and running multiple containers. It can run multiple machines with a single command.
+
+It is run using a YML file, called 'docker-compose.yml'
+Example `docker-compose.yml` file:
+```
+version: 2
+services:
+	dockerapp:
+		build: .
+		ports:
+			-"5000:5000"
+		volumes:
+			-.app/app
+	redis:
+		image: redis:3.2.0
+```
+`version 2` is for the version of docker-compose.
+`dockerapp` and `redis` are tag names of images to be used
+`image` is the base image used to create the `redis` image
+
+**Linking**
+In version 2, it is not necessary to specifically declare linking between builds. Versiontwo allows containers to discover each other by name.
+
+To create and run all containers:
+`docker-compose up`
+Then run `docker ps` to see the results
+
+**Other commands**
+`docker-compose logs (-f) (containerName)`
+`-f` is the 'follow' flag that will continue to output log events as they happen
+Unless a `containerName` is specified, you will see logs for all containers running.
+`docker-compose stop`
+`docker-compose rm --all`
+
+! If you makae changes to the files in images that are described in the compose yml file, you will need to rebuild them before running them. You can do that inside of docker-compose:
+`docker-compose build`
+Then run them: `docker-compose up -d`
+
+### Testing in Containers
+To run a one-time command for a service within a container:
+`docker-compose run`
+e.g:
+`docker-compose run dockerapp python test.py`
+this means the test file is included int he image. This is recommended if it doesn't make your image too big.
+
+### Continuous Integration
+see [CircleCI](https://circleci.com/)
+
+def: a practice in which isolated changes are immediately tested and reported when they are added toa  larger code base.
+
+goal = rapid feedback so that if a defect is introduced into the code base, it can be identified and corrected as soon as possible. 
+
+flow:
+dev -> github
+		|
+		| - push to branch triggers CI
+		|
+	CI Server (build + test) ------> DockerHub (optional)
+		|								|
+		| - optional step				|
+		|								|
+	Deply to staging/production server _|
+
+### Deployment of Docker Containers
+Usually done by provisioning VM's and deploying docker on the VMs
+Done with Docker Machine. 
+Steps:
+	- provisions new VMs
+	- install Docker Engine
+	- configure Docker client
+Drivers are available for AWS, Digital OCean, Google App Engine, and more
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
