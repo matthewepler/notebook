@@ -137,14 +137,122 @@ Not for OS or applications. It's for:
 * AWS management console, CLI, SDK API
 * Authorization and Policies
 
-#### AWS IAM BEST PRACTICES
+**AWS IAM BEST PRACTICES**
+1. Delete AWS account root access keys
+2. Create individual IAM users
+3. Use groups to assign permissions to IAM users
+4. Grant least privelage
+5. Configure strong password policy
+6. Enable MFA (Multi-factor Authentication) for privelaged users or all users
+7. Use roles for apps that run on EC2
+8. Delegate by using roles instead of sharing credentials
+9. Rotate credentials regularly
+10. Remove unecessary users and credentials
+11. Use policy conditions for extra security
+12. Monitor activity in your AWS account (see AWS CloudTrail)
+
+Alt to AIM is Resource-based Policies
+* offered by some services, not all
+* grant across-account access
+* examples include S3, Glacier
+
+Note: when configuring IAM in console, region will appear as "Global."
+
+**Admin Roles**
+Best Practice is to not even give yourself admin access by default. Create an admin role you can assume manually so you don't make a stupid mistake. 
+
+Examples of typical security group names:
+* Administrators
+* Developers
+* Security Auditors
+
+Default privelages should be ZERO!
+
+Note: Assigning someone to a group does not give them sign-in access to AWS. Assign that in their "Security Credentials" tab.
+
+You can have 2 access keys, for rotation. One is active, the other inactive and pending. 
+__Setting Up__
+1. Just give them a single key
+2. When time to rotate, come back and see the following:
+
+__Rotating Keys__
+1. If only one key, add another one. It will be inactive.
+2. Turn off the active one
+3. Make the other one active
+4. Verify a sign-on and that it's working for the user
+5. Delete the old one. 
 
 
+## Module 4: Storage
+### RDS 
+Relational Database Service
+* scales 'vertically' (adds more hardware)
+* resizable capacity
+* diff. flavors: MySQL, PostreSQL, etc...
+* autobackus w/ up to 35 days retention
+* capable of snapshots saved to S3 & cross-regional snapshots
+
+There is always a Standby copy instance of the RDS database. In the event of failure of the original instance, the Standby is swapped in and a new Standby is created. 
+
+**RDS Best Practices**
+1. Monitor memory, CPU, storage
+2. Use multi AZ deployments to auto provision and maintain a synchronous standby in a different AZ
+3. Enable auto backups
+4. Set the backup window to occur during the daily low in write IOPS
+5. Set a TTL of < 30 seconds if your client app is caching the DNS data of your DB in stances.
+6. Test failover for your DB instance. Don't just assume it will work the way you think it will. 
+
+### DynamoDB (NoSQL)
+* no storage limits
+* SSD storage, so it's fast
+* easy to change capacity
+
+Each tabe requires that every item needs a unique ID (called the primary id)
+There are 2 different types of Primary ID's
+1. Partition - uses a value from the entry to hash a value. That value becomes where it will be stored. No 2 items in a table can have the same partition key value. 
+2. Composite - Partition + Sort. ??? __Unclear to me.__
+
+**Supported Operations**
+1. Query - uses keys (faster)
+2. Scan - reads every item (slower). Do not use if avoidable.
+
+You can use RDS and Dynamo in the same application and/or instance.
+
+You can run other DB types, you just have to set them up yourself in your instances. There are also AMIs build to handle other DB types.
 
 
+## Elasticity and Management Tools
+**Auto-Scaling**
+good for apps that experience variability in usage
+Service is free, but you pay for the EC2 instances
 
+Need to know:
+* What - launch configuration - a template used to launch new EC2 instances
+* Where - Auto-scaling Grouops - A collection of EC2 instances that share similar characteristincs. You set a min, max, and target quantity and auto-scaling attempts to stay at the target. 
+* When - Auto-scaling lifecycles
 
+**Load Balancers**
+distributek traffic across instances. Supports HTTP/S, TCP to EC2 instances
 
+continually checks helath of every instance. Can tie the health w/ auto-scaling to create a self-healing system.
+
+Can also be used for internal networks as well as internet-facing ones.
+
+Can also be used to force SSL by encrypting incoming HTTP to HTTPS
+
+**CloudWatch**
+monitoring, logging
+can add custom metrics from apps if desired
+default refresh is every 5 minutes. You can pay addit'l for every 1 min
+
+Alarms can trigger actions like SMS, email, and auto-scaling
+
+**Trusted Advisor**
+A reccomendation engine for best practices
+* cost
+* security
+* fault tolerances
+* performance improvement
 
 
 
