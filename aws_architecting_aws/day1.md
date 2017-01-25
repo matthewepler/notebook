@@ -142,4 +142,74 @@ Every subnet in your VPC must be associeate with a route table. A subnet can be 
 When you create a VPC, it automatically has a main route table with a single route that enables communication with the VPC. If you don't explicity associate a subnet with a route table, the subnet is implicity assoc. with the main route table. 
 
 
+## Module 3: Designing Your Environment
+!! If time, compare self-paced lab content to this training. For future reference. 
 
+Not all services are available in all regions. Regions have different pricing (due to local taxes, etc).
+
+Reccommendation for AZs: start with two Availability Zones per region. 
+* if resources in one Availability Zone are unreachable, your applications should not fail
+* Most apps can support two AZs
+* Using more than two AZs for high availability (HA) is not usually cost-effective
+* Elastic load balancer (and Route53) would determine what AZ will receive the traffic.
+
+Spot markets exist for every AZ zone.
+
+RDS and Dynamo's replication across AZs is taken care of by AWS (managed).
+
+See slides for in-depth explanation of CIDR ranges. 
+
+SUBNETS: In every subnet, the first four and last one IP addresses are reserved for AWS use. 
+Recommendations: 
+* Start with one publi c and one private subnet per Availability Zone.
+* Allocate substatially more IPs for private subnets than for public subnets.
+* Consider larger subnets over smaller ones (/24 and larger). That way you don't have to recreate them. More future-proof. LEss likely to waste or run out of IPs
+
+**Routing Traffic in VPCs**
+Only one route table per subnet. 
+Security Groups are 'stateful.' They remember the incoming traffic and if it was allowed, then it doesn't check it on the way out. 
+By default, newly created security groups allow all outbound traffic to all destinations. __e.g.__ a spam virus could otherwise takeover outbound and send a bunch of messages from a mail server. 
+
+Security Groups are Instance (EC2) level.
+ACLs are subnet level. 
+* stateless
+* allow all traffic incoming/outgoing by default
+
+You can only have one Internet Gateway per VPC. Period.
+
+EC2 must have a public IP address to get to the internet, even if it's in a public subnet. 
+
+Multiple VPCs require multiple gateways. One for each. 
+
+Outbound traffic from private instances require an NAT instance (the NAT Gateway service from AWS, or an EC2 instance yourself, which enables you to set port forwarding.)
+
+You can capture flow logs at different levels for your VPC. Logs are published to CloudWatch Logs
+* VPC
+* subnet
+* ENI - you can set a way for your machine to keep a static MAC address (useful for licences)
+
+VPC Peering
+* no internet gateway or virtual gateway required
+* no single pint of failure
+* no bandwidth bottlenecks
+
+Bastian servers/boxes are ssh gateways to private servers
+
+## Module 4: Making Your Environment Highly Available (HA)
+Elastic Load Balancing (ELB)
+between instanceso
+
+Max of 5 static (elastic) IP addresses per account. Upgradable if you contact AWS. 
+
+Amazon Route 53 handles Doman Name management and is an authoritative DNS.
+
+CloudFormation is used to create VPCs
+
+
+### Notes from Lab 2
+To create a new AMI from an instance that looks good:
+- do not stop/start the instance. That would delete local file changes.
+Instead, snapshot the storage volue of the instance and create an AMI off of that. Then launch the new server wtihout having to stop the first one and without having to install anything - it will just work the way it was. See 3.1
+
+
+When creating an Image from a snapshot, it is recommended to use the HVM (Hardware-assisted virtualization) option as the Virtualization type for most applications.
