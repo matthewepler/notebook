@@ -111,7 +111,8 @@ To build, use the 'build' command with `-t` to add a tag. Also include the path 
 Each step in the build process is run as a container and destroyed when done. Then a new container is made for the next step, and so on. Each run command will execute on the top writable layer of the container. Docker commits that to a new image. The new image is used for the next step in the Dockerfile. 
 
 Example of multiline RUN arguments:
-```RUN apt-get install -y \
+```
+RUN apt-get install -y \
 	git \
 	python \
 	vim 
