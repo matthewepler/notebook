@@ -16,7 +16,8 @@ module.exports = {
 		// detects changes to html files
 		new HtmlWebpackPlugin({
 			template: path.join(__dirname, 'public/index.html')
-		})
+		}),
+		new webpack.NamedModulesPlugin()
 	],
 	devServer: {
 		contentBase: resolve(__dirname, 'public'),
