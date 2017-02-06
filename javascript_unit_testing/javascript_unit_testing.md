@@ -109,7 +109,7 @@ Inside the package.json, there is a "script" section that has a default "test" c
 
 Create a test folder at the same level as the `package.json` file. **It should be called 'test,** not tests or anything else. 
 
-All test files should be put in the 'test' directory. To run them, all you have to do now is use npm:
+All test files should be put in the 'test' directory. They should be titled something like 'filename_test.js' To run them, all you have to do now is use npm:
 `npm test`
 
 
