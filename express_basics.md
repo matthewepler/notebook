@@ -2,6 +2,9 @@
 [Express Basics - Treehouse](https://teamtreehouse.com/library/express-basics)
 
 ### Tools
+**Express Generator**
+[link](https://expressjs.com/en/starter/generator.html)
+
 **nodemon**
 * runs dev server
 * is a wrapper around the 'node' command and package
