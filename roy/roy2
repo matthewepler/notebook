@@ -1,0 +1,60 @@
+Features:
+create an account
+create a project
+
+MVP would include the ability to create everything above in the browser. When a new project is added, an email is sent to any users whose interest categories match the project's categories. 
+
+
+1. compartmentalize the data and create tables
+
+User  utf-8
+----
+Id - integer, auto-incremented
+First Name - varchar(50)
+Last Name - varchar(70)
+Password - char(32) ?-depending on crypto algo
+Salt - char(8)
+Email - varchar(100)
+Profile Image - varchar(20)
+Website - varhcar(100)
+Intro - text
+Skills - tableID (USER_SKILLS)
+Tools - tableId (TOOLS
+Interests
+
+Project
+-------
+Id
+UserId
+Name
+Description
+Target Media
+Category (see User.interests)
+Project Images
+Skills Needed
+Collaborators (Users.id)
+Tools 
+
+USER_SKILLS
+-----------
+
+ALL_SKILLS
+----------
+
+
+
+
+* Salting a password
+takes the password input and makes it unique by adding randomness
+ensures that no two passwords are ever the same, even if the passwords were input identically.
+
+HW
+===
+install mysql
+follow these instructions to configure apache, php, and mysql:
+  https://coolestguidesontheplanet.com/get-apache-mysql-php-and-phpmyadmin-working-on-macos-sierra/
+put etc folder under git control so you can see the changes
+Learn Unix file structure
+Check out Webstorm
+Look into how Node uses sha-1 for passwords, and what it is
+add data types to Project table
